@@ -311,6 +311,95 @@ html.hero-ready .ht-line > span { animation: heroLine .95s var(--ease) forwards;
 }
 
 /* ============================================================
+   JOURNEY — experience timeline (horizontal desktop / vertical mobile)
+   ============================================================ */
+.jr-head { max-width: 760px; }
+.jr-lead { margin-top: 24px; color: var(--text-2); max-width: 52ch; }
+
+.jr-timeline {
+  position: relative;
+  margin-top: clamp(48px, 6vw, 84px);
+  display: grid;
+  grid-template-columns: var(--jr-cols, 1fr);
+  grid-template-rows: minmax(170px, auto) 48px minmax(170px, auto);
+  column-gap: clamp(18px, 2.4vw, 32px);
+}
+
+/* Connecting line — geometry is measured and set by JS (first node -> last node) */
+.jr-rail { position: absolute; z-index: 0; background: var(--border); }
+.jr-fill { position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); will-change: transform; }
+
+/* Nodes sitting on the line */
+.jr-node { grid-row: 2; grid-column: var(--c); position: relative; z-index: 1; display: grid; place-items: center; }
+.jr-dot {
+  display: block; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  transition: background-color .4s ease, border-color .4s ease, transform .55s var(--ease), box-shadow .55s ease;
+}
+.jr-node.on .jr-dot {
+  background: var(--accent); border-color: var(--accent); transform: scale(1.4);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.jr-node--end .jr-dot { width: 11px; height: 11px; background: transparent; border-color: var(--text-2); }
+.jr-node--end.on .jr-dot { background: transparent; border-color: var(--accent); transform: scale(1.15); }
+
+/* Experience cards */
+.jr-card {
+  grid-row: 1; grid-column: var(--c); align-self: end; margin-bottom: 22px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 24px 22px;
+  transition: opacity .65s var(--ease), transform .5s var(--ease), border-color .35s ease, box-shadow .5s var(--ease);
+}
+.jr-card--down { grid-row: 3; align-self: start; margin-bottom: 0; margin-top: 22px; }
+html.js .jr-card { opacity: 0; transform: translateY(24px); }
+html.js .jr-card.in { opacity: 1; transform: none; }
+html.js .jr-card.in:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: var(--shadow); }
+
+.jr-years { font: 500 11px/1 var(--f-head); letter-spacing: .14em; text-transform: uppercase; color: var(--text-2); transition: color .4s ease; }
+.jr-card.on .jr-years { color: var(--accent); }
+.jr-co-row { margin-top: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.jr-logo { height: 20px; width: auto; border-radius: 3px; opacity: .9; }
+.jr-co { margin-top: 12px; font: 600 19px/1.25 var(--f-head); letter-spacing: -.01em; color: var(--text); }
+.jr-co-row .jr-co { margin-top: 0; }
+.jr-role { margin-top: 5px; font: italic 500 15px/1.4 var(--f-edit); color: var(--text-2); }
+.jr-desc { margin-top: 12px; font: 400 14px/1.65 var(--f-body); color: var(--text-2); }
+.jr-skills { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+.jr-skills li {
+  font: 500 10px/1 var(--f-head); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px;
+}
+
+/* 'More to come' end marker */
+.jr-more {
+  grid-row: 3; grid-column: var(--c); align-self: start; padding-top: 14px;
+  font: 500 11px/1.6 var(--f-head); letter-spacing: .18em; text-transform: uppercase; color: var(--text-2);
+  text-align: center;
+}
+.jr-more--up { grid-row: 1; align-self: end; padding-top: 0; padding-bottom: 14px; }
+
+/* Vertical timeline on smaller screens */
+@media (max-width: 900px) {
+  .jr-timeline {
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    row-gap: 34px; column-gap: 0;
+    margin-top: 48px;
+  }
+  .jr-node { grid-column: 1; grid-row: auto; display: block; align-self: start; padding: 26px 0 0 15px; }
+  .jr-card, .jr-card--down { grid-column: 2; grid-row: auto; align-self: start; margin: 0; }
+  .jr-more, .jr-more--up { grid-column: 2; grid-row: auto; align-self: start; padding: 26px 0 0; text-align: left; }
+}
+
+/* Reduced motion — everything visible, line fully drawn, no movement */
+@media (prefers-reduced-motion: reduce) {
+  html.js .jr-card { opacity: 1; transform: none; transition: none; }
+  html.js .jr-card:hover, html.js .jr-card.in:hover { transform: none; }
+  .jr-dot { transition: none; }
+  .jr-years { transition: none; }
+}
+
+/* ============================================================
    BUTTONS
    ============================================================ */
 .btn {
@@ -478,6 +567,7 @@ html.js .reveal.d3 { transition-delay: .3s; }
     <a class="brand" href="#about">Adrian Vale<span class="brand-dot">.</span></a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#about">About</a>
+      <a href="#journey">Journey</a>
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-actions">
@@ -497,7 +587,8 @@ html.js .reveal.d3 { transition-delay: .3s; }
   <div class="container">
     <p class="label">Menu</p>
     <a class="m-link" href="#about"><span>About</span><span class="m-num">01</span></a>
-    <a class="m-link" href="#contact"><span>Contact</span><span class="m-num">02</span></a>
+    <a class="m-link" href="#journey"><span>Journey</span><span class="m-num">02</span></a>
+    <a class="m-link" href="#contact"><span>Contact</span><span class="m-num">03</span></a>
     <a class="m-mail" href="mailto:hello@adrianvale.com">hello@adrianvale.com</a>
   </div>
 </div>
@@ -545,11 +636,26 @@ html.js .reveal.d3 { transition-delay: .3s; }
       <div class="marquee-group"><span>Design</span><span class="m-sep" aria-hidden="true">✳</span><span>Develop</span><span class="m-sep" aria-hidden="true">✳</span><span>Create</span><span class="m-sep" aria-hidden="true">✳</span><span>Innovate</span><span class="m-sep" aria-hidden="true">✳</span><span>Build</span><span class="m-sep" aria-hidden="true">✳</span><span>Design</span><span class="m-sep" aria-hidden="true">✳</span><span>Develop</span><span class="m-sep" aria-hidden="true">✳</span><span>Create</span><span class="m-sep" aria-hidden="true">✳</span><span>Innovate</span><span class="m-sep" aria-hidden="true">✳</span><span>Build</span><span class="m-sep" aria-hidden="true">✳</span><span>Design</span><span class="m-sep" aria-hidden="true">✳</span><span>Develop</span><span class="m-sep" aria-hidden="true">✳</span><span>Create</span><span class="m-sep" aria-hidden="true">✳</span><span>Innovate</span><span class="m-sep" aria-hidden="true">✳</span><span>Build</span><span class="m-sep" aria-hidden="true">✳</span><span>Design</span><span class="m-sep" aria-hidden="true">✳</span><span>Develop</span><span class="m-sep" aria-hidden="true">✳</span><span>Create</span><span class="m-sep" aria-hidden="true">✳</span><span>Innovate</span><span class="m-sep" aria-hidden="true">✳</span><span>Build</span><span class="m-sep" aria-hidden="true">✳</span><span>Design</span><span class="m-sep" aria-hidden="true">✳</span><span>Develop</span><span class="m-sep" aria-hidden="true">✳</span><span>Create</span><span class="m-sep" aria-hidden="true">✳</span><span>Innovate</span><span class="m-sep" aria-hidden="true">✳</span><span>Build</span><span class="m-sep" aria-hidden="true">✳</span></div>
     </div>
   </section>
+
+  <!-- ================= JOURNEY — experience timeline ================= -->
+  <section class="section" id="journey">
+    <div class="container container--wide">
+      <div class="jr-head reveal">
+        <p class="sec-label"><span class="sec-num">02</span><span>The Journey</span></p>
+        <h2 class="sec-title">Every Experience Shapes What <em>Comes Next</em>.</h2>
+        <p class="jr-lead">A timeline of the opportunities, challenges and experiences that shaped my journey.</p>
+      </div>
+      <div class="jr-timeline" id="jrTimeline">
+        <span class="jr-rail" aria-hidden="true"><span class="jr-fill"></span></span>
+        <!-- milestones render here from the JOURNEY array in the script below -->
+      </div>
+    </div>
+  </section>
   <!-- ================= CONTACT ================= -->
   <section class="section" id="contact">
     <div class="container contact-grid">
       <div class="contact-left reveal">
-        <p class="sec-label"><span class="sec-num">02</span><span>Contact</span></p>
+        <p class="sec-label"><span class="sec-num">03</span><span>Contact</span></p>
         <h2 class="sec-title">Start a <em>project</em>.</h2>
         <p class="contact-lead">Tell me about your brand, your timeline and what &ldquo;done&rdquo; looks like. Every project begins with a short conversation &mdash; no decks, no jargon.</p>
         <a class="contact-mail" href="mailto:hello@adrianvale.com">hello@adrianvale.com <i data-lucide="arrow-up-right"></i></a>
@@ -689,7 +795,7 @@ html.js .reveal.d3 { transition-delay: .3s; }
           if (a) a.classList.add('active');
         });
       }, { rootMargin: '-40% 0px -55% 0px' });
-      ['about', 'contact'].forEach(function (id) {
+      ['about', 'journey', 'contact'].forEach(function (id) {
         var s = document.getElementById(id);
         if (s) navIO.observe(s);
       });
@@ -745,6 +851,140 @@ html.js .reveal.d3 { transition-delay: .3s; }
       window.addEventListener('blur', function () { mTrack.style.animationPlayState = ''; });
       document.addEventListener('mouseleave', function () { mTrack.style.animationPlayState = ''; });
     }
+
+    /* ---------- Journey — experience timeline (data-driven) ---------- */
+    (function initJourney() {
+      var wrap = $('#jrTimeline');
+      if (!wrap) return;
+
+      /* ===== JOURNEY DATA — replace with your real experience =====
+         years   : milestone label (year or duration)
+         company : company / studio name
+         role    : your role title
+         desc    : one or two concise sentences
+         skills  : array of technologies / skills
+         logo    : image path or URL, or null (never invent a logo)
+         Add, edit or remove entries freely — the layout adapts. */
+      var JOURNEY = [
+        { years: '20XX — Present', company: 'Company Name', role: 'Role Title',
+          desc: 'Replace this with a concise note on your focus, ownership and impact in this role.',
+          skills: ['Skill', 'Skill', 'Skill'], logo: null },
+        { years: '20XX — 20XX', company: 'Company Name', role: 'Role Title',
+          desc: 'Replace this with the scope you owned, the team you worked with and what changed because of you.',
+          skills: ['Skill', 'Skill', 'Skill'], logo: null },
+        { years: '20XX — 20XX', company: 'Company Name', role: 'Role Title',
+          desc: 'Replace this with the challenge you took on and the outcome you shipped.',
+          skills: ['Skill', 'Skill', 'Skill'], logo: null }
+      ];
+
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var mq = window.matchMedia('(max-width: 900px)');
+
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      /* ----- render milestones ----- */
+      var out = '', i, n = JOURNEY.length;
+      for (i = 0; i < n; i++) {
+        var e = JOURNEY[i];
+        out +=
+          '<span class="jr-node" style="--c:' + (i + 1) + '"><span class="jr-dot"></span></span>' +
+          '<article class="jr-card' + (i % 2 ? ' jr-card--down' : '') + '" style="--c:' + (i + 1) + '" data-d="' + Math.min(i * 90, 360) + '">' +
+            '<p class="jr-years">' + esc(e.years) + '</p>' +
+            (e.logo
+              ? '<div class="jr-co-row"><img class="jr-logo" src="' + esc(e.logo) + '" alt="' + esc(e.company) + ' logo"><h3 class="jr-co">' + esc(e.company) + '</h3></div>'
+              : '<h3 class="jr-co">' + esc(e.company) + '</h3>') +
+            '<p class="jr-role">' + esc(e.role) + '</p>' +
+            '<p class="jr-desc">' + esc(e.desc) + '</p>' +
+            (e.skills && e.skills.length
+              ? '<ul class="jr-skills">' + e.skills.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>'
+              : '') +
+          '</article>';
+      }
+      out += '<span class="jr-node jr-node--end" style="--c:' + (n + 1) + '"><span class="jr-dot jr-dot--end"></span></span>';
+      out += '<p class="jr-more' + ((n - 1) % 2 === 0 ? '' : ' jr-more--up') + '" style="--c:' + (n + 1) + '">More to come</p>';
+      wrap.insertAdjacentHTML('beforeend', out);
+      wrap.style.setProperty('--jr-cols', 'repeat(' + (n + 1) + ', minmax(0, 1fr))');
+
+      var rail = $('.jr-rail', wrap), fill = $('.jr-fill', wrap);
+      var nodes = $$('.jr-node', wrap), cards = $$('.jr-card', wrap);
+      var dots = nodes.map(function (nd) { return nd.firstElementChild; });
+      var horizontal = true, base = 0, span = 1, pos = [];
+
+      function layout() {
+        var w = wrap.getBoundingClientRect();
+        if (!w.width || !dots.length) return;
+        horizontal = !mq.matches;
+        var f = dots[0].getBoundingClientRect(), l = dots[dots.length - 1].getBoundingClientRect();
+        if (horizontal) {
+          var y = f.top + f.height / 2 - w.top;
+          base = f.left + f.width / 2 - w.left;
+          span = Math.max((l.left + l.width / 2 - w.left) - base, 1);
+          rail.style.left = base + 'px'; rail.style.top = y + 'px';
+          rail.style.width = span + 'px'; rail.style.height = '1px';
+          fill.style.transformOrigin = '0 50%';
+        } else {
+          var x = f.left + f.width / 2 - w.left;
+          base = f.top + f.height / 2 - w.top;
+          span = Math.max((l.top + l.height / 2 - w.top) - base, 1);
+          rail.style.left = x + 'px'; rail.style.top = base + 'px';
+          rail.style.width = '1px'; rail.style.height = span + 'px';
+          fill.style.transformOrigin = '50% 0';
+        }
+        pos = dots.map(function (d) {
+          var r = d.getBoundingClientRect();
+          var c = horizontal ? r.left + r.width / 2 - w.left : r.top + r.height / 2 - w.top;
+          return (c - base) / span;
+        });
+        update();
+      }
+
+      function update() {
+        var p = 1;
+        if (!reduce) {
+          var r = wrap.getBoundingClientRect();
+          p = (window.innerHeight * 0.78 - r.top) / r.height;
+          p = Math.max(0, Math.min(1, p));
+        }
+        fill.style.transform = (horizontal ? 'scaleX(' : 'scaleY(') + p + ')';
+        nodes.forEach(function (nd, k) {
+          var on = p >= pos[k] - 0.002;
+          nd.classList.toggle('on', on);
+          if (cards[k]) cards[k].classList.toggle('on', on);
+        });
+      }
+
+      /* card reveal — subtle fade-up as cards enter the viewport */
+      if (!('IntersectionObserver' in window) || reduce) {
+        cards.forEach(function (c) { c.classList.add('in'); });
+      } else {
+        var jrIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (!en.isIntersecting) return;
+            var el = en.target, d = parseInt(el.getAttribute('data-d'), 10) || 0;
+            el.style.transitionDelay = d + 'ms';
+            el.classList.add('in');
+            window.setTimeout(function () { el.style.transitionDelay = ''; }, d + 800);
+            jrIO.unobserve(el);
+          });
+        }, { threshold: .15 });
+        cards.forEach(function (c) { jrIO.observe(c); });
+      }
+
+      /* scroll-driven line draw */
+      var queued = false;
+      window.addEventListener('scroll', function () {
+        if (queued || reduce) return;
+        queued = true;
+        window.requestAnimationFrame(function () { queued = false; update(); });
+      }, { passive: true });
+
+      window.addEventListener('resize', layout);
+      if (mq.addEventListener) mq.addEventListener('change', layout);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); });
+      layout();
+    })();
 
     /* ---------- Three.js hero sculpture ---------- */
     (function initScene() {
