@@ -400,6 +400,112 @@ html.js .jr-card.in:hover { transform: translateY(-3px); border-color: var(--acc
 }
 
 /* ============================================================
+   PROJECTS — selected works, alternating editorial rows
+   ============================================================ */
+.pw-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+.pw-head-copy { max-width: 760px; }
+.pw-lead { margin-top: 24px; color: var(--text-2); max-width: 52ch; }
+.pw-count { font: 500 11px/1 var(--f-head); letter-spacing: .14em; text-transform: uppercase; color: var(--text-2); white-space: nowrap; padding-bottom: 8px; }
+.pw-count b { font-weight: 600; color: var(--accent); }
+
+.pw-list { margin-top: clamp(56px, 7vw, 96px); display: flex; flex-direction: column; gap: clamp(80px, 10vw, 150px); }
+
+/* One row = one project. Placement alternates:
+   odd rows -> information left / image right, even rows -> image left / information right. */
+.pw-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+}
+.pw-info { grid-column: 1; grid-row: 1; }
+.pw-media { grid-column: 2; grid-row: 1; }
+.pw-row--flip .pw-media { grid-column: 1; }
+.pw-row--flip .pw-info { grid-column: 2; }
+
+/* Screenshot — consistent landscape 16:10, clipped for the hover scale */
+.pw-shot {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.pw-shot img, .pw-shot svg { width: 100%; height: 100%; object-fit: cover; }
+.pw-shot img { transition: transform 1.1s var(--ease); }
+.pw-media:hover .pw-shot img, .pw-media:hover .pw-shot svg { transform: scale(1.035); }
+
+/* Reveal — the image settles from its own side, the copy rises with a short stagger */
+html.js .pw-row .pw-shot {
+  opacity: 0; transform: translateX(26px) scale(1.04);
+  transition: opacity .9s var(--ease), transform 1.15s var(--ease);
+}
+html.js .pw-row--flip .pw-shot { transform: translateX(-26px) scale(1.04); }
+html.js .pw-row.in .pw-shot { opacity: 1; transform: none; }
+html.js .pw-st {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .6s var(--ease), transform .75s var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms + 110ms);
+}
+html.js .pw-row.in .pw-st { opacity: 1; transform: none; }
+
+/* Project information */
+.pw-meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+  font: 500 11px/1 var(--f-head); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-2);
+}
+.pw-idx { font-weight: 600; color: var(--accent); }
+.pw-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); opacity: .6; }
+.pw-title { margin-top: 16px; font: 600 clamp(25px, 2.7vw, 34px)/1.18 var(--f-head); letter-spacing: -.018em; color: var(--text); }
+.pw-desc { margin-top: 14px; max-width: 46ch; color: var(--text-2); font-size: 15px; }
+.pw-stack { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 7px; }
+.pw-stack li {
+  font: 500 10px/1 var(--f-head); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 6px 11px;
+}
+.pw-links { margin-top: 30px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 30px; }
+.pw-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 600 12px/1 var(--f-head); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text); padding-bottom: 7px; border-bottom: 1px solid var(--border);
+  transition: color .3s ease, border-color .3s ease;
+}
+.pw-link svg { width: 13px; height: 13px; color: var(--accent); transition: transform .4s var(--ease); }
+.pw-link:hover { color: var(--accent); border-color: var(--accent); }
+.pw-link:hover svg { transform: translate(3px, -3px); }
+.pw-link--soft { color: var(--text-2); }
+
+/* Closing invitation */
+.pw-end { margin-top: clamp(90px, 11vw, 150px); text-align: center; }
+.pw-end-line { font: 500 clamp(24px, 3vw, 38px)/1.3 var(--f-head); letter-spacing: -.015em; color: var(--text); }
+.pw-end-line em { font-family: var(--f-edit); font-style: italic; font-weight: 500; letter-spacing: -.005em; color: var(--accent); }
+.pw-end .btn { margin-top: 38px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* Tablet / mobile — single column, image first */
+@media (max-width: 1000px) {
+  .pw-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .pw-count { padding-bottom: 0; }
+}
+@media (max-width: 900px) {
+  .pw-list { margin-top: 48px; gap: 64px; }
+  .pw-row, .pw-row--flip { grid-template-columns: minmax(0, 1fr); row-gap: 28px; }
+  .pw-row .pw-media, .pw-row--flip .pw-media,
+  .pw-row .pw-info, .pw-row--flip .pw-info { grid-column: 1; grid-row: auto; }
+  html.js .pw-row .pw-shot, html.js .pw-row--flip .pw-shot { transform: translateY(20px) scale(1.04); }
+  .pw-title { font-size: clamp(23px, 6.2vw, 30px); }
+  .pw-links { gap: 12px 24px; }
+}
+
+/* Reduced motion — everything visible immediately, no movement */
+@media (prefers-reduced-motion: reduce) {
+  html.js .pw-row .pw-shot, html.js .pw-row--flip .pw-shot, html.js .pw-st { opacity: 1; transform: none; transition: none; }
+  .pw-media:hover .pw-shot img, .pw-media:hover .pw-shot svg { transform: none; }
+  .pw-link svg { transition: none; }
+}
+
+/* ============================================================
    BUTTONS
    ============================================================ */
 .btn {
@@ -568,6 +674,7 @@ html.js .reveal.d3 { transition-delay: .3s; }
     <nav class="nav-links" aria-label="Primary">
       <a href="#about">About</a>
       <a href="#journey">Journey</a>
+      <a href="#work">Work</a>
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-actions">
@@ -588,7 +695,8 @@ html.js .reveal.d3 { transition-delay: .3s; }
     <p class="label">Menu</p>
     <a class="m-link" href="#about"><span>About</span><span class="m-num">01</span></a>
     <a class="m-link" href="#journey"><span>Journey</span><span class="m-num">02</span></a>
-    <a class="m-link" href="#contact"><span>Contact</span><span class="m-num">03</span></a>
+    <a class="m-link" href="#work"><span>Work</span><span class="m-num">03</span></a>
+    <a class="m-link" href="#contact"><span>Contact</span><span class="m-num">04</span></a>
     <a class="m-mail" href="mailto:hello@adrianvale.com">hello@adrianvale.com</a>
   </div>
 </div>
@@ -651,11 +759,32 @@ html.js .reveal.d3 { transition-delay: .3s; }
       </div>
     </div>
   </section>
+  <!-- ================= PROJECTS — selected works (zig-zag) ================= -->
+  <section class="section" id="work">
+    <div class="container container--wide">
+      <div class="pw-head reveal">
+        <div class="pw-head-copy">
+          <p class="sec-label"><span class="sec-num">03</span><span>Selected Works &mdash; 2024 / 2026</span></p>
+          <h2 class="sec-title">A Selection of Things I&rsquo;ve <em>Built</em>.</h2>
+          <p class="pw-lead">A collection of projects where ideas turn into thoughtful digital experiences.</p>
+        </div>
+        <p class="pw-count" id="pwCount"></p>
+      </div>
+      <div class="pw-list" id="pwList">
+        <!-- project rows render here from the PROJECTS array in the script below -->
+      </div>
+      <div class="pw-end reveal">
+        <p class="pw-end-line">Have a project in mind?<br>Let&rsquo;s build something <em>meaningful</em>.</p>
+        <a class="btn btn-primary" href="#contact">Let&rsquo;s Talk <i data-lucide="arrow-up-right"></i></a>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= CONTACT ================= -->
   <section class="section" id="contact">
     <div class="container contact-grid">
       <div class="contact-left reveal">
-        <p class="sec-label"><span class="sec-num">03</span><span>Contact</span></p>
+        <p class="sec-label"><span class="sec-num">04</span><span>Contact</span></p>
         <h2 class="sec-title">Start a <em>project</em>.</h2>
         <p class="contact-lead">Tell me about your brand, your timeline and what &ldquo;done&rdquo; looks like. Every project begins with a short conversation &mdash; no decks, no jargon.</p>
         <a class="contact-mail" href="mailto:hello@adrianvale.com">hello@adrianvale.com <i data-lucide="arrow-up-right"></i></a>
@@ -795,7 +924,7 @@ html.js .reveal.d3 { transition-delay: .3s; }
           if (a) a.classList.add('active');
         });
       }, { rootMargin: '-40% 0px -55% 0px' });
-      ['about', 'journey', 'contact'].forEach(function (id) {
+      ['about', 'journey', 'work', 'contact'].forEach(function (id) {
         var s = document.getElementById(id);
         if (s) navIO.observe(s);
       });
@@ -984,6 +1113,118 @@ html.js .reveal.d3 { transition-delay: .3s; }
       if (mq.addEventListener) mq.addEventListener('change', layout);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); });
       layout();
+    })();
+
+    /* ---------- Projects — selected works (data-driven zig-zag) ---------- */
+    (function initProjects() {
+      var list = $('#pwList');
+      if (!list) return;
+
+      /* ===== PROJECTS DATA — replace with your real projects =====
+         title : project name
+         year  : completion year
+         cat   : category / discipline
+         desc  : one or two concise sentences
+         stack : array of technologies / tools
+         img   : landscape screenshot (16:10 or 4:3, cropped to 16:10) — path or URL; null renders a neutral placeholder
+         url   : 'View Project' link
+         demo  : optional 'Live Demo' link (null hides it)
+         code  : optional 'Source Code' link (null hides it)
+         Add, edit or remove entries freely — rows keep alternating automatically. */
+      var PROJECTS = [
+        { title: 'Project One', year: '2026', cat: 'Brand Identity',
+          desc: 'Replace this with a short description — the problem, the approach and what the project delivers.',
+          stack: ['Tool', 'Tool', 'Tool'], img: null, url: '#', demo: null, code: null },
+        { title: 'Project Two', year: '2025', cat: 'Web Experience',
+          desc: 'Replace this with a short description — the audience, the constraints and the thinking behind it.',
+          stack: ['Tool', 'Tool', 'Tool'], img: null, url: '#', demo: null, code: null },
+        { title: 'Project Three', year: '2024', cat: 'Creative Development',
+          desc: 'Replace this with a short description — the outcome, the details and what made it work.',
+          stack: ['Tool', 'Tool', 'Tool'], img: null, url: '#', demo: null, code: null }
+      ];
+
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+      function pad(x) { return (x < 10 ? '0' : '') + x; }
+
+      /* Neutral, theme-aware stand-in shown until a real screenshot is supplied */
+      function phSVG(i) {
+        return '<svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" role="img" ' +
+          'aria-label="Placeholder — replace with the project screenshot">' +
+          '<rect width="1600" height="1000" style="fill:var(--surface-2)"/>' +
+          '<g fill="none" style="stroke:var(--text-2);stroke-width:5" stroke-linecap="round" stroke-linejoin="round" opacity=".38">' +
+            '<rect x="712" y="420" width="176" height="126" rx="12"/>' +
+            '<circle cx="748" cy="456" r="11"/>' +
+            '<path d="M732 528 L778 477 L804 503 L832 474 L882 528"/>' +
+          '</g>' +
+          '<text x="800" y="616" text-anchor="middle" opacity=".62" ' +
+            'style="fill:var(--text-2);font-family:Manrope, sans-serif;font-size:26px;font-weight:500;letter-spacing:7px">' +
+            'PROJECT ' + pad(i + 1) + ' · SCREENSHOT PLACEHOLDER</text>' +
+        '</svg>';
+      }
+
+      function link(href, label, soft) {
+        return '<a class="pw-link' + (soft ? ' pw-link--soft' : '') + '" href="' + esc(href) + '" ' +
+          'target="_blank" rel="noopener">' + esc(label) + ' <i data-lucide="arrow-up-right"></i></a>';
+      }
+
+      /* ----- render rows (odd: info left / image right, even: image left / info right) ----- */
+      var out = '', i, n = PROJECTS.length;
+      for (i = 0; i < n; i++) {
+        var p = PROJECTS[i], links = '';
+        if (p.url) links += link(p.url, 'View Project');
+        if (p.demo) links += link(p.demo, 'Live Demo', true);
+        if (p.code) links += link(p.code, 'Source Code', true);
+        out +=
+          '<article class="pw-row' + (i % 2 ? ' pw-row--flip' : '') + '">' +
+            '<figure class="pw-media">' +
+              '<div class="pw-shot">' +
+                (p.img
+                  ? '<img src="' + esc(p.img) + '" alt="Screenshot of ' + esc(p.title) + '" loading="lazy" decoding="async">'
+                  : phSVG(i)) +
+              '</div>' +
+            '</figure>' +
+            '<div class="pw-info">' +
+              '<p class="pw-meta pw-st" style="--i:0">' +
+                '<span class="pw-idx">' + pad(i + 1) + '</span><span class="pw-dot" aria-hidden="true"></span>' +
+                '<span>' + esc(p.year) + '</span><span class="pw-dot" aria-hidden="true"></span>' +
+                '<span>' + esc(p.cat) + '</span>' +
+              '</p>' +
+              '<h3 class="pw-title pw-st" style="--i:1">' + esc(p.title) + '</h3>' +
+              '<p class="pw-desc pw-st" style="--i:2">' + esc(p.desc) + '</p>' +
+              (p.stack && p.stack.length
+                ? '<ul class="pw-stack pw-st" style="--i:3">' +
+                  p.stack.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>'
+                : '') +
+              (links ? '<div class="pw-links pw-st" style="--i:4">' + links + '</div>' : '') +
+            '</div>' +
+          '</article>';
+      }
+      list.insertAdjacentHTML('beforeend', out);
+
+      /* project count, kept in sync with the data above */
+      var countEl = $('#pwCount');
+      if (countEl) countEl.innerHTML = '<b>' + pad(n) + '</b> ' + (n === 1 ? 'Project' : 'Projects');
+
+      /* icons for the injected links */
+      if (window.lucide) { try { window.lucide.createIcons(); } catch (e) {} }
+
+      /* ----- each row reveals independently as it enters the viewport ----- */
+      var rows = $$('.pw-row', list);
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!('IntersectionObserver' in window) || reduce) {
+        rows.forEach(function (r) { r.classList.add('in'); });
+      } else {
+        var pwIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (!en.isIntersecting) return;
+            en.target.classList.add('in');
+            pwIO.unobserve(en.target);
+          });
+        }, { threshold: .15 });
+        rows.forEach(function (r) { pwIO.observe(r); });
+      }
     })();
 
     /* ---------- Three.js hero sculpture ---------- */
